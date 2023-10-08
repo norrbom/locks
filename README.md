@@ -1,9 +1,9 @@
 # Locks
-|--------------------------------------------- |
-| ⚠️ WARNING                                   |
-|--------------------------------------------- |
-| Work in progress, keep you expectations low! |
-|--------------------------------------------- |
+
+⚠️ WARNING
+
+Work in progress, keep you expectations low!
+
 
 
 ## Ways to acquire locks on shared resources
