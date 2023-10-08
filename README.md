@@ -4,10 +4,6 @@
 
 Work in progress, keep you expectations low!
 
-
-
-## Ways to acquire locks on shared resources
-
 ## Reasons for implementing a lock mechanism
 
 - Efficiency
@@ -16,45 +12,25 @@ Work in progress, keep you expectations low!
 
 - Both
 
-## Terminology
+## Correctness
 
-- Optimistic locking
+### Race condition
 
-  Allows multiple users to update, only one will success the others are informed about a the conflict (race condition)
+Multiple threads are changing data at the same time, resulting in an nondeterministic outcome.
 
-- Pessimistic locking
+example:
 
-- Centralized locking:
-  - Consensus-based locking:
-    ex: ZooKeeper (Zab), etcd (Raft), Redis?
+```cpp
+int shared_val = 0;
 
-- Monotonic time
+auto critical_section[&shared_val]() {
+    shared_val++; // this is three operations, read value, increment and write back
+}
 
-- Critical Section
-
-  A section of the code that are accessing a shared resource
-
-- Starvation
-
-  A thread is unable to make progress for a long period of time
-
-- Race condition
-
-  Multiple threads are changing some data at the same time and the outcome is nondeterministic
-
-    example:
-
-    ```cpp
-    int shared_val = 0;
-
-    auto critical_section[&shared_val]() {
-        shared_val++; // this is three operations, read value, increment and write back
-    }
-
-    // threads executing the critical code section without any synchronization
-    std::thread t1(critical_section);
-    std::thread t2(critical_section);
-    ```
+// threads executing the critical code section without any synchronization
+std::thread t1(critical_section);
+std::thread t2(critical_section);
+```
 
 ## Regular single machine locks
 
@@ -110,3 +86,8 @@ std::thread t2(critical_section(m, shared_val));
 ```
 
 ## Distributed locks
+
+### Centralized locking
+
+Consensus-based locking
+ex: ZooKeeper (Zab), etcd (Raft), Redis?
