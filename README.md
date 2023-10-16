@@ -23,9 +23,11 @@ example:
 ```cpp
 int shared_val = 0;
 
-auto critical_section[&shared_val]() {
-    shared_val++; // this is three operations, read value, increment and write back
-}
+auto critical_section = [&shared_val]() {
+    for (int i = 0; i < N; ++i) {
+        shared_val++; // this is three operations, read value, increment and write back
+    }
+};
 
 // threads executing the critical code section without any synchronization
 std::thread t1(critical_section);
@@ -47,12 +49,14 @@ example:
 std::atomic<int> shared_val(0);
 
 // Function to increment atomic int
-auto critical_section[&shared_val]() {
-    shared_val++; // std::atomic overloads operator++ and atomically increments the value, (sum = sum + 1) is not atomic
-}
+auto critical_section = [&shared_val]() {
+    for (int i = 0; i < N; ++i) {
+        shared_val++; // std::atomic overloads operator++ and atomically increments the value, (sum = sum + 1) is not atomic
+    }
+};
 // threads executing the critical code section
-std::thread t1(critical_section(shared_val));
-std::thread t2(critical_section(shared_val));
+std::thread t1(critical_section);
+std::thread t2(critical_section);
 ```
 
 ### Semaphore
@@ -70,19 +74,21 @@ A special form of Semaphore providing mutual exclusion to a critical section of 
 - costly in terms of CPU cycles compared to atomic operations
 
 ```cpp
-long long int shared_val{0};
+int shared_val = 0;
 
 // Create a mutex
 std::mutex m;
 
 // Function to increment atomic int
-void critical_section(std::mutex &m, long long int &val) {
-    std::lock_guard<std::mutex> g(m);
-    val++;
-}
+auto critical_section = [&shared_val, &m]() {
+    for (int i = 0; i < N; ++i) {
+        std::lock_guard<std::mutex> g(m);
+        shared_val++; // std::atomic overloads operator++ and atomically increments the value, (sum = sum + 1) is not atomic
+    }
+};
 // threads executing the critical code section
-std::thread t1(critical_section(m, shared_val));
-std::thread t2(critical_section(m, shared_val));
+std::thread t1(critical_section);
+std::thread t2(critical_section);
 ```
 
 ## Distributed locks
